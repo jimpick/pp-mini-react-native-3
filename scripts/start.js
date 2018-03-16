@@ -31,8 +31,11 @@ const paths = require('../config/paths');
 const config = require('../config/webpack.config.dev');
 const createDevServerConfig = require('../config/webpackDevServer.config');
 
+const {attachWebsocket} = require('../src/server/gateway')
+
 const useYarn = fs.existsSync(paths.yarnLockFile);
-const isInteractive = process.stdout.isTTY;
+// const isInteractive = process.stdout.isTTY;
+const isInteractive = false;
 
 // Warn and crash if required files are missing
 if (!checkRequiredFiles([paths.appHtml, paths.appIndexJs])) {
@@ -81,7 +84,7 @@ choosePort(HOST, DEFAULT_PORT)
     );
     const devServer = new WebpackDevServer(compiler, serverConfig);
     // Launch WebpackDevServer.
-    devServer.listen(port, HOST, err => {
+    devServer.listen(port, HOST, function (err) {
       if (err) {
         return console.log(err);
       }
@@ -89,6 +92,7 @@ choosePort(HOST, DEFAULT_PORT)
         clearConsole();
       }
       console.log(chalk.cyan('Starting the development server...\n'));
+      attachWebsocket(devServer, this);
       openBrowser(urls.localUrlForBrowser);
     });
 

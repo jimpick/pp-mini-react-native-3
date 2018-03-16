@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
-import logo from '../../logo.svg';
 import { Image, StyleSheet, Text, View } from 'react-native';
-
-const Link = (props) => <Text {...props} accessibilityRole="link" style={StyleSheet.compose(styles.link, props.style)} />
 
 class Blink extends Component {
   constructor(props) {
