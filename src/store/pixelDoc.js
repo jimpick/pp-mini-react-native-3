@@ -54,7 +54,10 @@ export default class PixelDoc extends EventEmitter {
     pump(
       stream,
       hm.multicore.archiver.replicate({encrypt: false}),
-      stream
+      stream,
+      err => {
+        console.log('Stream ended', err)
+      }
     )
     this.emit('ready')
   }

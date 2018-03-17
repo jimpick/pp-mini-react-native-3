@@ -93,7 +93,7 @@ choosePort(HOST, DEFAULT_PORT)
       }
       console.log(chalk.cyan('Starting the development server...\n'));
       attachWebsocket(devServer, this);
-      openBrowser(urls.localUrlForBrowser);
+      // openBrowser(urls.localUrlForBrowser);
     });
 
     ['SIGINT', 'SIGTERM'].forEach(function(sig) {

@@ -26,7 +26,6 @@ function attachWebsocket (devServer, server) {
   devServer.app.ws('/archiver/:key', (ws, req) => {
     const archiverKey = req.params.key
     console.log('Websocket initiated for', archiverKey)
-    return
     let multicore
     if (multicores[archiverKey]) {
       multicore = multicores[archiverKey]
