@@ -36,9 +36,9 @@ Archiver.prototype.createFeed = function (key, opts) {
   this.changes.append({type: 'add', key: key.toString('hex')})
 
   feed.on('peer-add', peer => {
-    console.log('Jim peer-add', peer)
+    // console.log('Jim peer-add', peer)
     peer.stream.on('extension', (type, message) => {
-      console.log('Jim received extension message')
+      // console.log('Jim received extension message')
       if (type === 'announceActor') {
         try {
           self.emit('announceActor', JSON.parse(message.toString()))
@@ -78,7 +78,7 @@ Archiver.prototype.replicate = function (opts) {
   if (opts.userData) {
     protocolOpts.userData = opts.userData
   }
-  console.log('Jim replicate', protocolOpts)
+  // console.log('Jim replicate', protocolOpts)
   var stream = protocol(protocolOpts)
   var self = this
 
@@ -91,7 +91,7 @@ Archiver.prototype.replicate = function (opts) {
 
   this.on('sendAnnounceActor', message => {
     // console.log('Jim sendAnnounceActor', stream)
-    console.log('Jim sendAnnounceActor')
+    // console.log('Jim sendAnnounceActor')
     for (let feed of stream.feeds) {
       if (feed.remoteSupports('announceActor')) {
         feed.extension('announceActor', message)
@@ -126,13 +126,13 @@ Archiver.prototype.replicate = function (opts) {
       }
 
       function onfeed () {
-        console.log('Jim onfeed', prettyHash(feed.key),
-                    'dk:', prettyHash(feed.discoveryKey))
-        console.log('Jim feed length', feed.length)
+        // console.log('Jim onfeed', prettyHash(feed.key),
+        //             'dk:', prettyHash(feed.discoveryKey))
+        // console.log('Jim feed length', feed.length)
         if (stream.destroyed) return
 
         stream.on('error', err => {
-          console.error('Jim onfeed error', err)
+          // console.error('Jim onfeed error', err)
         })
         stream.on('close', onclose)
         stream.on('end', onclose)
@@ -142,10 +142,10 @@ Archiver.prototype.replicate = function (opts) {
           stream: stream,
           live: true
         })
-        console.log('Jim feed peers', feed.peers.length)
+        // console.log('Jim feed peers', feed.peers.length)
 
         function onclose () {
-          console.log('Jim onfeed onclose')
+          // console.log('Jim onfeed onclose')
           feed.removeListener('_archive', onarchive)
         }
 
@@ -187,9 +187,9 @@ class Multicore extends EventEmitter {
         Object.keys(self.archiver.feeds).forEach(key => {
           const feed = self.archiver.feeds[key]
           feed.on('peer-add', peer => {
-            console.log('Jim peer-add', peer)
+            // console.log('Jim peer-add', peer)
             peer.stream.on('extension', (type, message) => {
-              console.log('Jim received extension message')
+              // console.log('Jim received extension message')
               if (type === 'announceActor') {
                 try {
                   self.emit('announceActor', JSON.parse(message.toString()))
