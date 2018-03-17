@@ -1,49 +1,35 @@
 import React, { Component } from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
-
-class Blink extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {isShowingText: true}
-
-    setInterval(() => {
-      this.setState(previousState => {
-        return {
-          isShowingText: !previousState.isShowingText
-        }
-      })
-    }, 1000)
-  }
-
-  render() {
-    const display = this.state.isShowingText ? this.props.text : ' ';
-    return (
-      <Text>{display}</Text>
-    )
-  }
-}
-
-class Greeting extends Component {
-  render() {
-    return (
-      <Text>Hello {this.props.name}!</Text>
-    );
-  }
-}
+import { StyleSheet, Text, View } from 'react-native';
+import PixelDoc from '../../store/pixelDoc';
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
+
+  componentDidMount() {
+    console.log('Jim1');
+    this.pixelDoc = new PixelDoc()
+    this.pixelDoc.on('update', doc => this.setState({doc}));
+    this.pixelDoc.on('ready', () => {
+      this.setState({
+        sourceKey: this.pixelDoc.hm.source.key.toString('hex'),
+        archiverKey: this.pixelDoc.hm.getArchiverKey().toString('hex')
+      });
+    });
+  }
+
   render() {
-    const pic = {
-      uri: 'https://upload.wikimedia.org/wikipedia/commons/d/de/Bananavarieties.jpg'
-    }
     return (
       <View style={styles.app}>
-        <Text>Hello world!</Text>
-        <Image source={pic} style={{width: 193, height: 110}}/>
-        <Greeting name='Rexxar' />
-        <Greeting name='Jaina' />
-        <Greeting name='Valeera' />
-        <Blink text='I love to blink' />
+        <div className="info">
+          Source: {this.state.sourceKey}<br />
+          Archiver: {this.state.archiverKey}<br />
+        </div>
+        <pre>
+          {JSON.stringify(this.state.doc, null, 2)}
+        </pre>
       </View>
     );
   }

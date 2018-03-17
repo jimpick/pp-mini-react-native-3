@@ -1,18 +1,23 @@
 import websocket from 'websocket-stream'
 import pump from 'pump'
+import {EventEmitter} from 'events'
 import randomAccessIdb from 'random-access-idb'
 import hypermergeMicro from '../lib/hypermerge-micro'
 
 const storage = randomAccessIdb('pp-mini')
 
-export default class PixelDoc {
-  constructor (update) {
-    this.update = update
+export default class PixelDoc extends EventEmitter {
+  constructor () {
+    super()
     const key = localStorage.getItem('key')
     const hm = hypermergeMicro(storage, {key, debugLog: true})
     hm.on('debugLog', console.log)
     hm.on('ready', this.ready.bind(this))
     this.hm = hm
+  }
+
+  update(doc) {
+    this.emit('update', doc)
   }
 
   ready () {
@@ -51,5 +56,6 @@ export default class PixelDoc {
       hm.multicore.archiver.replicate({encrypt: false}),
       stream
     )
+    this.emit('ready')
   }
 }
