@@ -4,6 +4,8 @@ import {EventEmitter} from 'events'
 import randomAccessIdb from 'random-access-idb'
 import hypermergeMicro from '../lib/hypermerge-micro'
 
+require('events').prototype._maxListeners = 100
+
 const storage = randomAccessIdb('pp-mini')
 
 export default class PixelDoc extends EventEmitter {

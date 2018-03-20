@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import PixelDoc from '../../store/pixelDoc';
+import PixelDoc from '../store/pixelDoc';
+import MainView from './MainView';
 
-class App extends Component {
+export default class App extends Component {
   constructor(props) {
     super(props);
     this.state = {};
@@ -20,7 +21,16 @@ class App extends Component {
     });
   }
 
+  setPixelColor(x, y, color) {
+    console.log('Jim setPixelColor', x, y, color)
+  }
   render() {
+    return (
+      <MainView
+        doc={this.state.doc}
+        setPixelColor={this.setPixelColor.bind(this)} />
+    )
+    /*
     return (
       <View style={styles.app}>
         <div className="info">
@@ -32,6 +42,7 @@ class App extends Component {
         </pre>
       </View>
     );
+    */
   }
 }
 
@@ -67,5 +78,3 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace, monospace'
   }
 });
-
-export default App;
