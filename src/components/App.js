@@ -23,8 +23,12 @@ export default class App extends Component {
 
   setPixelColor(x, y, color) {
     console.log('Jim setPixelColor', x, y, color)
+    this.pixelDoc.setPixelColor(x, y, color)
   }
   render() {
+    if (!this.state.doc) {
+      return <Text>Loading...</Text>;
+    }
     return (
       <MainView
         doc={this.state.doc}

@@ -23,9 +23,11 @@ function attachWebsocket (devServer, server) {
   })
   // devServer.app.use(router)
 
-  devServer.app.ws('/archiver/:key', (ws, req) => {
+  devServer.app.ws('/archiver/:key/:actorKey', (ws, req) => {
     const archiverKey = req.params.key
+    const actorKey = req.params.actorKey
     console.log('Websocket initiated for', archiverKey)
+    console.log('Local actor key', actorKey)
     let multicore
     if (multicores[archiverKey]) {
       multicore = multicores[archiverKey]
@@ -75,7 +77,13 @@ function attachWebsocket (devServer, server) {
     })
 
     // Join swarm
-    const sw = multicore.joinSwarm()
+    const userData = {
+      name: 'react-native-web',
+      key: actorKey
+    }
+    const sw = multicore.joinSwarm({
+      userData: JSON.stringify(userData)
+    })
     sw.on('connection', (peer, type) => {
       if (!peer.remoteUserData) {
         console.log('Connect - No user data')

@@ -51,7 +51,8 @@ export default class PixelDoc extends EventEmitter {
     const archiverKey = hm.getArchiverKey().toString('hex')
     const host = document.location.host
     const proto = document.location.protocol === 'https:' ? 'wss' : 'ws'
-    const url = `${proto}://${host}/archiver/${archiverKey}`
+    const actorKey = hm.local ? hm.local.key.toString('hex') : 'none'
+    const url = `${proto}://${host}/archiver/${archiverKey}/${actorKey}`
     const stream = websocket(url)
     pump(
       stream,
@@ -62,5 +63,9 @@ export default class PixelDoc extends EventEmitter {
       }
     )
     this.emit('ready')
+  }
+
+  setPixelColor (x, y, color) {
+    this.hm.change(doc => { doc[`x${x}y${y}`] = color })
   }
 }
