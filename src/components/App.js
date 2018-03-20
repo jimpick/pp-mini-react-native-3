@@ -10,19 +10,11 @@ export default class App extends Component {
   }
 
   componentDidMount() {
-    console.log('Jim1');
     this.pixelDoc = new PixelDoc()
-    this.pixelDoc.on('update', doc => this.setState({doc}));
-    this.pixelDoc.on('ready', () => {
-      this.setState({
-        sourceKey: this.pixelDoc.hm.source.key.toString('hex'),
-        archiverKey: this.pixelDoc.hm.getArchiverKey().toString('hex')
-      });
-    });
+    this.pixelDoc.on('update', ({info, doc}) => this.setState({info, doc}));
   }
 
   setPixelColor(x, y, color) {
-    console.log('Jim setPixelColor', x, y, color)
     this.pixelDoc.setPixelColor(x, y, color)
   }
   render() {
@@ -31,6 +23,7 @@ export default class App extends Component {
     }
     return (
       <MainView
+        info={this.state.info}
         doc={this.state.doc}
         setPixelColor={this.setPixelColor.bind(this)} />
     )

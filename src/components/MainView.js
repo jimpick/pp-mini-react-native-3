@@ -22,7 +22,7 @@ export default class MainView extends Component {
     this.state = { selectedColor: 'r' };
   }
   render() {
-    const { doc, setPixelColor } = this.props;
+    const { info, doc, setPixelColor } = this.props;
     const { width, height } = Dimensions.get('window');
     console.log('Jim dimensions', width, height);
     const palette = colors.map(color => {
@@ -63,43 +63,20 @@ export default class MainView extends Component {
         <View style={styles.infoBox}>
           <Text style={styles.info}>Source:</Text>
           <Text style={styles.info}>
-            8b641b23d0d39aae04b037107e69e43d240fca9c13c79f3f22218ae84c152ac9
+            {info.sourceKey}
           </Text>
           <Text style={styles.info}>Archiver:</Text>
           <Text style={styles.info}>
-            e6d7c38645abdeea15966d3dcb0ed1e9a1f2e7c9e95b786f23ab4519f7f109dc
+            {info.archiverKey}
+            {' '}
+            {info.archiverChangesLength}
           </Text>
           <View style={styles.divider} />
-          <Text style={styles.info}>
-            8b641b23d0d39aae04b037107e69e43d240fca9c13c79f3f22218ae84c152ac9
-          </Text>
-          <Text style={styles.info}>
-            b9c5b1..e8 63
-          </Text>
-          <Text style={styles.info}>
-            3a411fe668f12e7ecd6c6fd4c1e509441bfabf6ff0a4aa29076345b2c81b2ad3
-          </Text>
-          <Text style={styles.info}>
-            c2d9cc..76 64
-          </Text>
-          <Text style={styles.info}>
-            d2035befde293bc4e90e0302e355e9c0223bf5992ef907827a5d080331c8192e
-          </Text>
-          <Text style={styles.info}>
-            8d0c15..b0 15
-          </Text>
-          <Text style={styles.info}>
-            9adbd2605c1affa99ca2290753b7a250c496c6ca59d69ef6c14aadb307d503aa
-          </Text>
-          <Text style={styles.info}>
-            f4b291..91 37
-          </Text>
-          <Text style={styles.info}>
-            19012a0c11b391c68dbe1a0d4224664ba783f04a3f0a57bc4a8b462657ed0f1f
-          </Text>
-          <Text style={styles.info}>
-            5f4082..ca 68
-          </Text>
+          {info.peers.map(({key, length}) => (
+            <Text key={key} style={styles.info}>
+              {key} {length}
+            </Text>
+          ))}
         </View>
         <View style={styles.palette}>
           {palette}

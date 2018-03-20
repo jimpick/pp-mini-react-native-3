@@ -10,6 +10,7 @@ const Multicore = require('../lib/multicore')
 require('events').prototype._maxListeners = 100
 
 const multicores = {}
+let numStreams = 0;
 
 function attachWebsocket (devServer, server) {
   console.log('Attaching websocket')
@@ -31,7 +32,9 @@ function attachWebsocket (devServer, server) {
     let multicore
     if (multicores[archiverKey]) {
       multicore = multicores[archiverKey]
+      console.log('Using cached multicore')
     } else {
+      console.log('Creating new multicore')
       multicore = new Multicore(ram, {key: req.params.key})
       multicores[archiverKey] = multicore
       const ar = multicore.archiver
@@ -51,57 +54,62 @@ function attachWebsocket (devServer, server) {
           console.log('archive changes sync', ar.changes.length)
         })
       })
+
+      // Join swarm
+      const userData = {
+        name: 'react-native-web'
+      }
+      if (actorKey !== 'none') {
+        userData.key = actorKey
+      }
+      const sw = multicore.joinSwarm({
+        userData: JSON.stringify(userData)
+      })
+      sw.on('connection', (peer, type) => {
+        if (!peer.remoteUserData) {
+          console.log('Connect - No user data')
+          return
+        }
+        try {
+          const userData = JSON.parse(peer.remoteUserData.toString())
+          if (userData.key) {
+            console.log(`Connect ${userData.name} ${userData.key}`)
+            const dk = hypercore.discoveryKey(toBuffer(userData.key, 'hex'))
+            multicore.archiver.add(dk)
+            multicore.announceActor(userData.name, userData.key)
+          }
+        } catch (e) {
+          console.log(`Connection with no or invalid user data`, e)
+          // console.error('Error parsing JSON', e)
+        }
+      })
     }
     const ar = multicore.archiver
     ar.ready(() => {
+      console.log('Number of active websocket streams', ++numStreams);
       const stream = websocketStream(ws)
       pump(
         stream,
         through2(function (chunk, enc, cb) {
-          console.log('From web', chunk)
+          // console.log('From web', chunk)
           this.push(chunk)
           cb()
         }),
         ar.replicate({encrypt: false}),
         through2(function (chunk, enc, cb) {
-          console.log('To web', chunk)
+          // console.log('To web', chunk)
           this.push(chunk)
           cb()
         }),
         stream,
         err => {
           console.log('pipe finished', err && err.message)
+          --numStreams;
         }
       )
       multicore.replicateFeed(ar.changes)
     })
 
-    // Join swarm
-    const userData = {
-      name: 'react-native-web',
-      key: actorKey
-    }
-    const sw = multicore.joinSwarm({
-      userData: JSON.stringify(userData)
-    })
-    sw.on('connection', (peer, type) => {
-      if (!peer.remoteUserData) {
-        console.log('Connect - No user data')
-        return
-      }
-      try {
-        const userData = JSON.parse(peer.remoteUserData.toString())
-        if (userData.key) {
-          console.log(`Connect ${userData.name} ${userData.key}`)
-          const dk = hypercore.discoveryKey(toBuffer(userData.key, 'hex'))
-          multicore.archiver.add(dk)
-          multicore.announceActor(userData.name, userData.key)
-        }
-      } catch (e) {
-        console.log(`Connection with no or invalid user data`, e)
-        // console.error('Error parsing JSON', e)
-      }
-    })
   })
 }
 

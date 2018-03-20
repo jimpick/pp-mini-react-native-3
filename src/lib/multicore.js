@@ -101,7 +101,7 @@ Archiver.prototype.replicate = function (opts) {
 
   function add (dk) {
     self.ready(function (err) {
-      console.log('Add dk', dk.toString('hex'))
+      // console.log('Add dk', dk.toString('hex'))
       if (err) return stream.destroy(err)
       if (stream.destroyed) return
 

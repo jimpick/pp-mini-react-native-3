@@ -19,7 +19,40 @@ export default class PixelDoc extends EventEmitter {
   }
 
   update(doc) {
-    this.emit('update', doc)
+    const info = {
+      sourceKey: this.hm.source.key.toString('hex'),
+      archiverKey: this.hm.getArchiverKey().toString('hex'),
+      archiverChangesLength: this.hm.multicore.archiver.changes.length,
+      peers: []
+    };
+    info.peers.push({
+      key: info.sourceKey,
+      length: this.hm.source.length
+    });
+    if (this.hm.local) {
+      info.peers.push({
+        key: this.hm.local.key.toString('hex'),
+        length: this.hm.local.length
+      });
+    }
+    Object.keys(this.hm.peers).forEach(key => {
+      const feed = this.hm.peers[key]
+      info.peers.push({
+        key: feed.key.toString('hex'),
+        length: feed.length
+      })
+    })
+    console.log('Jim info', info)
+    const updateDoc = {
+      x0y0: doc.x0y0,
+      x0y1: doc.x0y1,
+      x1y0: doc.x1y0,
+      x1y1: doc.x1y1
+    }
+    this.emit('update', {
+      info,
+      doc: updateDoc
+    })
   }
 
   ready () {
